@@ -7,4 +7,9 @@ interface Provider {
      */
     fun get(): String
 
+    /**
+     * Return true if the provider is alive false if it cannot be reached
+     */
+    fun checkHealth(): Boolean
+
 }
