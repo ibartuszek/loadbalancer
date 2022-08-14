@@ -3,9 +3,12 @@ package org.ibartuszek.loadbalancer
 import mu.KotlinLogging
 import org.ibartuszek.loadbalancer.provider.Provider
 import org.ibartuszek.loadbalancer.providerlist.ProviderList
+import java.util.concurrent.atomic.AtomicLong
 
 class LoadBalancerImpl(
-    private val providerList: ProviderList
+    private val maximumRequestPerProviders: Int,
+    private val providerList: ProviderList,
+    private val activeRequests: AtomicLong
 ) : LoadBalancer {
 
     private val logger = KotlinLogging.logger { }
@@ -28,8 +31,19 @@ class LoadBalancerImpl(
             }
         }
 
-    override fun get(): String = providerList.poll()?.get().also { id ->
-        logger.info { "Return id=$id" }
-    } ?: throw ProviderListEmptyException()
+    override fun get(): String {
+        if (providerList.aliveProviders() * maximumRequestPerProviders >= activeRequests.get()) {
+            activeRequests.incrementAndGet()
+            try {
+                return providerList.poll()?.get().also { id ->
+                    logger.info { "Return id=$id" }
+                } ?: throw ProviderListEmptyException()
+            } finally {
+                activeRequests.decrementAndGet()
+            }
+        } else {
+            throw ProviderCapacityLimitException()
+        }
+    }
 
 }

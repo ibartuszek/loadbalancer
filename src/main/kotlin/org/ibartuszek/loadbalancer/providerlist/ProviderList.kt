@@ -33,4 +33,6 @@ class ProviderList(
 
     fun check(): Map<Provider, Boolean> = queue.associateWith { it.check() }
 
+    fun aliveProviders() = queue.size
+
 }
