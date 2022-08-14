@@ -38,4 +38,28 @@ class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
         assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerList.size(), "The list should have maximum size!")
     }
 
+    @Test
+    fun testExcludeShouldRemoveTheProviderFromProverList() {
+        // given
+        loadFullyProviderList()
+        val provider = ProviderImpl(ID_1)
+        // when
+        val actual = loadBalancer.exclude(provider)
+        // then
+        assertTrue(actual, "The loadBalancer should remove the provider!")
+        assertEquals(2, providerList.size(), "The size should be decreased after get method!")
+    }
+
+    @Test
+    fun testExcludeShouldReturnFalseWhenTheProverListDoesNotContainTheProvider() {
+        // given
+        val provider = ProviderImpl(ID_4)
+        loadFullyProviderList()
+        // when
+        val actual = loadBalancer.exclude(provider)
+        // then
+        assertFalse(actual, "The providerList does not contain provider!")
+        assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerList.size(), "The list should have maximum size!")
+    }
+
 }
