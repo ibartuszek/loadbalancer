@@ -47,8 +47,11 @@ abstract class AbstractLoadBalancerIT {
         )
         providerHealthCheckManager = ProviderHealthCheckManager(
             healthCheckInterval = HEALTH_CHECK_INTERVAL,
+            numberOfSuccessfulChecksForReactivate = NUMBER_OF_SUCCESSFUL_HEALTH_CHECKS,
+            timer = Timer(),
             providerList = providerList,
-            numberOfSuccessfulChecksForReactivate = NUMBER_OF_SUCCESSFUL_HEALTH_CHECKS
+            inactiveProviderMap = inactiveProviderMap,
+            providersToReAccept = providersToReAccept
         )
         loadBalancer = LoadBalancerImpl(
             providerList = providerList
