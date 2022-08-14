@@ -1,0 +1,41 @@
+package org.ibartuszek.loadbalancer.it
+
+import org.ibartuszek.loadbalancer.provider.ProviderImpl
+import org.ibartuszek.loadbalancer.providerlist.ProviderSelectionStrategy
+import org.ibartuszek.loadbalancer.providerlist.RandomSelectionStrategy
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+
+
+class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
+
+    private val selectionStrategy = RandomSelectionStrategy()
+
+    override fun getSelectionStrategy(): ProviderSelectionStrategy = selectionStrategy
+
+    @Test
+    fun testAcceptShouldPutTheProviderIntoProverList() {
+        // given
+        val provider = ProviderImpl(ID_1)
+        // when
+        val actual = loadBalancer.accept(provider)
+        // then
+        assertTrue(actual, "The loadBalancer should accept provider!")
+        assertEquals(provider, providerList.poll(), "The provider should be present in the list!")
+    }
+
+    @Test
+    fun testAcceptShouldRejectTheProviderWhenProverListIsFull() {
+        // given
+        val provider = ProviderImpl(ID_4)
+        loadFullyProviderList()
+        // when
+        val actual = loadBalancer.accept(provider)
+        // then
+        assertFalse(actual, "The loadBalancer should accept provider!")
+        assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerList.size(), "The list should have maximum size!")
+    }
+
+}
