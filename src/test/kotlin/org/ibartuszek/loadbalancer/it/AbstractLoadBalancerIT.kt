@@ -13,6 +13,7 @@ import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicLong
 
 
 abstract class AbstractLoadBalancerIT {
@@ -21,6 +22,7 @@ abstract class AbstractLoadBalancerIT {
         const val MAXIMUM_NUMBER_OF_PROVIDERS = 3
         const val HEALTH_CHECK_INTERVAL = 2L
         const val NUMBER_OF_SUCCESSFUL_HEALTH_CHECKS = 2
+        const val MAXIMUM_REQUEST_PER_PROVIDER = 4
 
         const val ID_1 = "id1"
         const val ID_2 = "id2"
@@ -34,6 +36,7 @@ abstract class AbstractLoadBalancerIT {
     protected lateinit var providerHealthCheckManager: ProviderHealthCheckManager
     protected lateinit var loadBalancer: LoadBalancer
 
+    protected val activeRequests = AtomicLong()
     protected val providerListQueue = ArrayBlockingQueue<Provider>(MAXIMUM_NUMBER_OF_PROVIDERS)
     protected val inactiveProviderMap: ConcurrentHashMap<Provider, Int> = ConcurrentHashMap()
     protected val providersToReAccept: CopyOnWriteArrayList<Provider> = CopyOnWriteArrayList()
@@ -54,7 +57,9 @@ abstract class AbstractLoadBalancerIT {
             providersToReAccept = providersToReAccept
         )
         loadBalancer = LoadBalancerImpl(
-            providerList = providerList
+            maximumRequestPerProviders = MAXIMUM_REQUEST_PER_PROVIDER,
+            providerList = providerList,
+            activeRequests = activeRequests
         )
     }
 
@@ -63,6 +68,7 @@ abstract class AbstractLoadBalancerIT {
         inactiveProviderMap.clear()
         providersToReAccept.clear()
         providerListQueue.clear()
+        activeRequests.set(0L)
     }
 
     protected fun loadFullyProviderList() {
