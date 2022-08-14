@@ -16,6 +16,8 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:2.1.23")
     runtimeOnly("org.slf4j:slf4j-simple:1.7.36")
     testImplementation(kotlin("test"))
+    testImplementation("org.mockito:mockito-core:4.6.1")
+    testImplementation("org.mockito:mockito-junit-jupiter:4.6.1")
 }
 
 tasks.test {
