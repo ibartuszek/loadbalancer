@@ -59,8 +59,4 @@ class ProviderHealthCheckManager(
         newInactiveProviderMap.forEach { (k, v) -> inactiveProviderMap.merge(k, v) { oldVal, _ -> oldVal } }
     }
 
-    fun inactiveProviders() = inactiveProviderMap.toMap()
-
-    fun providersToReAccept() = providersToReAccept.toList()
-
 }
