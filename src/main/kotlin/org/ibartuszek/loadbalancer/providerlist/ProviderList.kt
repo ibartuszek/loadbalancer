@@ -18,6 +18,10 @@ class ProviderList(
 
     fun exclude(provider: Provider): Boolean = queue.remove(provider)
 
+    fun exclude(providerSet: Set<Provider>) {
+        queue.removeAll(providerSet)
+    }
+
     fun poll(): Provider? {
         if (queue.size == 0) {
             return null
@@ -26,6 +30,8 @@ class ProviderList(
         queue.remove(provider)
         return provider
     }
+
+    fun checkHealth(): Map<Provider, Boolean> = queue.associateWith { it.checkHealth() }
 
     fun size() = queue.size
 
