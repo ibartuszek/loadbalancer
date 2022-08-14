@@ -7,10 +7,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 
 
@@ -29,7 +25,7 @@ class LoadBalancerWithRoundRobinStrategyIT : AbstractLoadBalancerIT() {
         val actual = loadBalancer.get()
         // then
         assertEquals(ID_1, actual, "The loadBalancer should return the id of the first provider!")
-        assertEquals(2, providerList.size(), "The size should be decreased after get method!")
+        assertEquals(2, providerListQueue.size, "The size should be decreased after get method!")
     }
 
     @Test

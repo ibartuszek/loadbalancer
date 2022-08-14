@@ -25,13 +25,13 @@ class LoadBalancerWithMockStrategyIT : AbstractLoadBalancerIT() {
     fun testGetShouldReturnAProviderId() {
         // given
         loadFullyProviderList()
-        `when`(selectionStrategy.selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS)).thenReturn(0)
+        `when`(selectionStrategy.selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS - 1)).thenReturn(0)
         // when
         val actual = loadBalancer.get()
         // then
         assertEquals(ID_1, actual, "The loadBalancer should return the id of the first provider!")
-        assertEquals(2, providerList.size(), "The size should be decreased after get method!")
-        verify(selectionStrategy).selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS)
+        assertEquals(2, providerListQueue.size, "The size should be decreased after get method!")
+        verify(selectionStrategy).selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS - 1)
     }
 
     @Test

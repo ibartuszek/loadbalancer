@@ -3,10 +3,16 @@ package org.ibartuszek.loadbalancer.it
 import org.ibartuszek.loadbalancer.LoadBalancer
 import org.ibartuszek.loadbalancer.LoadBalancerImpl
 import org.ibartuszek.loadbalancer.healthcheck.ProviderHealthCheckManager
+import org.ibartuszek.loadbalancer.provider.Provider
 import org.ibartuszek.loadbalancer.provider.ProviderImpl
 import org.ibartuszek.loadbalancer.providerlist.ProviderList
 import org.ibartuszek.loadbalancer.providerlist.ProviderSelectionStrategy
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 
 abstract class AbstractLoadBalancerIT {
@@ -24,15 +30,20 @@ abstract class AbstractLoadBalancerIT {
 
     abstract fun getSelectionStrategy(): ProviderSelectionStrategy
 
-    protected lateinit var providerList: ProviderList
+    private lateinit var providerList: ProviderList
     protected lateinit var providerHealthCheckManager: ProviderHealthCheckManager
     protected lateinit var loadBalancer: LoadBalancer
+
+    protected val providerListQueue = ArrayBlockingQueue<Provider>(MAXIMUM_NUMBER_OF_PROVIDERS)
+    protected val inactiveProviderMap: ConcurrentHashMap<Provider, Int> = ConcurrentHashMap()
+    protected val providersToReAccept: CopyOnWriteArrayList<Provider> = CopyOnWriteArrayList()
 
     @BeforeEach
     fun setup() {
         providerList = ProviderList(
             maximumNumberOfProviders = MAXIMUM_NUMBER_OF_PROVIDERS,
-            selectionStrategy = getSelectionStrategy()
+            selectionStrategy = getSelectionStrategy(),
+            queue = providerListQueue
         )
         providerHealthCheckManager = ProviderHealthCheckManager(
             healthCheckInterval = HEALTH_CHECK_INTERVAL,
@@ -44,10 +55,17 @@ abstract class AbstractLoadBalancerIT {
         )
     }
 
+    @AfterEach
+    fun clear() {
+        inactiveProviderMap.clear()
+        providersToReAccept.clear()
+        providerListQueue.clear()
+    }
+
     protected fun loadFullyProviderList() {
-        providerList.add(ProviderImpl(ID_1))
-        providerList.add(ProviderImpl(ID_2))
-        providerList.add(ProviderImpl(ID_3))
+        providerListQueue.add(ProviderImpl(ID_1))
+        providerListQueue.add(ProviderImpl(ID_2))
+        providerListQueue.add(ProviderImpl(ID_3))
     }
 
 }

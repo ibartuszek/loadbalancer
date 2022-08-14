@@ -23,7 +23,7 @@ class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
         val actual = loadBalancer.accept(provider)
         // then
         assertTrue(actual, "The loadBalancer should accept provider!")
-        assertEquals(provider, providerList.poll(), "The provider should be present in the list!")
+        assertEquals(provider, providerListQueue.poll(), "The provider should be present in the list!")
     }
 
     @Test
@@ -35,7 +35,7 @@ class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
         val actual = loadBalancer.accept(provider)
         // then
         assertFalse(actual, "The loadBalancer should accept provider!")
-        assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerList.size(), "The list should have maximum size!")
+        assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerListQueue.size, "The list should have maximum size!")
     }
 
     @Test
@@ -47,7 +47,7 @@ class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
         val actual = loadBalancer.exclude(provider)
         // then
         assertTrue(actual, "The loadBalancer should remove the provider!")
-        assertEquals(2, providerList.size(), "The size should be decreased after get method!")
+        assertEquals(2, providerListQueue.size, "The size should be decreased after get method!")
     }
 
     @Test
@@ -59,7 +59,7 @@ class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
         val actual = loadBalancer.exclude(provider)
         // then
         assertFalse(actual, "The providerList does not contain provider!")
-        assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerList.size(), "The list should have maximum size!")
+        assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerListQueue.size, "The list should have maximum size!")
     }
 
 }
