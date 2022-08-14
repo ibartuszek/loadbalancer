@@ -5,10 +5,9 @@ import java.util.concurrent.ArrayBlockingQueue
 
 class ProviderList(
     private val maximumNumberOfProviders: Int,
-    private val selectionStrategy: ProviderSelectionStrategy
+    private val selectionStrategy: ProviderSelectionStrategy,
+    private val queue: ArrayBlockingQueue<Provider>
 ) {
-
-    private val queue = ArrayBlockingQueue<Provider>(maximumNumberOfProviders)
 
     fun add(provider: Provider): Boolean {
         if (queue.size >= maximumNumberOfProviders) {
@@ -33,7 +32,5 @@ class ProviderList(
     }
 
     fun check(): Map<Provider, Boolean> = queue.associateWith { it.check() }
-
-    fun size() = queue.size
 
 }
