@@ -10,6 +10,6 @@ interface Provider {
     /**
      * Return true if the provider is alive false if it cannot be reached
      */
-    fun checkHealth(): Boolean
+    fun check(): Boolean
 
 }

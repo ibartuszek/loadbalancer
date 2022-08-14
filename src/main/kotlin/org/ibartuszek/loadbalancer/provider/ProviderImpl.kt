@@ -4,6 +4,6 @@ data class ProviderImpl(private val id: String) : Provider {
 
     override fun get(): String = id
 
-    override fun checkHealth(): Boolean = true
+    override fun check(): Boolean = true
 
 }

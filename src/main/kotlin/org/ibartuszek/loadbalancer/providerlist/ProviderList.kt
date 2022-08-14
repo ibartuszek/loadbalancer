@@ -32,7 +32,7 @@ class ProviderList(
         return provider
     }
 
-    fun checkHealth(): Map<Provider, Boolean> = queue.associateWith { it.checkHealth() }
+    fun check(): Map<Provider, Boolean> = queue.associateWith { it.check() }
 
     fun size() = queue.size
 
