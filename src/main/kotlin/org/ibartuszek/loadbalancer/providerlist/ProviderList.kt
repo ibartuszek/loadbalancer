@@ -1,9 +1,14 @@
-package org.ibartuszek.loadbalancer
+package org.ibartuszek.loadbalancer.providerlist
 
+import mu.KotlinLogging
 import org.ibartuszek.loadbalancer.provider.Provider
 
-class ProviderList(private val maximumNumberOfProviders: Int) {
+class ProviderList(
+    private val maximumNumberOfProviders: Int,
+    private val selectionStrategy: ProviderSelectionStrategy
+) {
 
+    private val logger = KotlinLogging.logger { }
     private val queue = ArrayDeque<Provider>(maximumNumberOfProviders)
 
     fun add(provider: Provider): Boolean {
@@ -17,8 +22,9 @@ class ProviderList(private val maximumNumberOfProviders: Int) {
         if (queue.size == 0) {
             return null
         }
-        val provider = queue.first()
+        val provider = queue[selectionStrategy.selectIndex(queue.size)]
         queue.remove(provider)
+        logger.debug { "Select provider=$provider" }
         return provider
     }
 
