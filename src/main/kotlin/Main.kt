@@ -1,7 +1,13 @@
-fun main(args: Array<String>) {
-    println("Hello World!")
+import mu.KotlinLogging
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+class Main {
+    companion object {
+
+        private val logger = KotlinLogging.logger { }
+        @JvmStatic
+        fun main(@Suppress("unused_parameter") args: Array<String>) {
+            logger.info("Hello World!")
+        }
+    }
+
 }
