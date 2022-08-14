@@ -2,6 +2,7 @@ package org.ibartuszek.loadbalancer.it
 
 import org.ibartuszek.loadbalancer.LoadBalancer
 import org.ibartuszek.loadbalancer.LoadBalancerImpl
+import org.ibartuszek.loadbalancer.ProviderListEmptyException
 import org.ibartuszek.loadbalancer.provider.ProviderImpl
 import org.ibartuszek.loadbalancer.providerlist.ProviderList
 import org.ibartuszek.loadbalancer.providerlist.ProviderSelectionStrategy
@@ -10,8 +11,10 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
+import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
@@ -76,6 +79,17 @@ class LoadBalancerIT {
         assertEquals(ID_1, actual, "The loadBalancer should return the id of the first provider!")
         assertEquals(2, providerList.size(), "The size should be decreased after get method!")
         verify(selectionStrategy).selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS)
+    }
+
+    @Test
+    fun testGetShouldThrowExceptionWhenThereAreNoProviders() {
+        assertThrows<ProviderListEmptyException> {
+            // given
+            // when
+            loadBalancer.get()
+            // then
+            verify(selectionStrategy, never()).selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS)
+        }
     }
 
     private fun loadFullyProviderList() {
