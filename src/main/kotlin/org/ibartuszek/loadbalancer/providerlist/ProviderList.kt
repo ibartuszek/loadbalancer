@@ -1,13 +1,14 @@
 package org.ibartuszek.loadbalancer.providerlist
 
 import org.ibartuszek.loadbalancer.provider.Provider
+import java.util.concurrent.ArrayBlockingQueue
 
 class ProviderList(
     private val maximumNumberOfProviders: Int,
     private val selectionStrategy: ProviderSelectionStrategy
 ) {
 
-    private val queue = ArrayDeque<Provider>(maximumNumberOfProviders)
+    private val queue = ArrayBlockingQueue<Provider>(maximumNumberOfProviders)
 
     fun add(provider: Provider): Boolean {
         if (queue.size >= maximumNumberOfProviders) {
@@ -26,7 +27,7 @@ class ProviderList(
         if (queue.size == 0) {
             return null
         }
-        val provider = queue[selectionStrategy.selectIndex(queue.size)]
+        val provider = queue.elementAt(selectionStrategy.selectIndex(maximumIndex = queue.size - 1))
         queue.remove(provider)
         return provider
     }

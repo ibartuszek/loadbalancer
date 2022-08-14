@@ -1,6 +1,5 @@
 package org.ibartuszek.loadbalancer.it
 
-import org.ibartuszek.loadbalancer.provider.Provider
 import org.ibartuszek.loadbalancer.provider.ProviderImpl
 import org.ibartuszek.loadbalancer.providerlist.ProviderSelectionStrategy
 import org.ibartuszek.loadbalancer.providerlist.RandomSelectionStrategy
@@ -8,11 +7,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
 
 
 class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
@@ -66,24 +60,6 @@ class BaseLoadBalancerIT : AbstractLoadBalancerIT() {
         // then
         assertFalse(actual, "The providerList does not contain provider!")
         assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerList.size(), "The list should have maximum size!")
-    }
-
-    @Test
-    fun testHealthCheckShouldRemoveProviderFromProviderListAndAddInactiveProviders() {
-        // given
-        setupTime()
-        val provider = mock(Provider::class.java)
-        `when`(provider.checkHealth()).thenReturn(false)
-        // `when`(provider.get()).thenReturn(ID_1)
-        providerList.add(provider)
-        // when
-        healthChecker.run()
-        val actual = healthChecker.inactiveProviders()
-        // then
-        verify(provider).checkHealth()
-        assertEquals(0, providerList.size())
-        assertEquals(1, actual.size)
-        assertTrue(actual.contains(provider))
     }
 
 }
