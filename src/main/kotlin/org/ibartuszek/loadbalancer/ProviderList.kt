@@ -7,7 +7,7 @@ class ProviderList(private val maximumNumberOfProviders: Int) {
     private val queue = ArrayDeque<Provider>(maximumNumberOfProviders)
 
     fun add(provider: Provider): Boolean {
-        if (queue.size > maximumNumberOfProviders) {
+        if (queue.size >= maximumNumberOfProviders) {
             return false
         }
         return queue.add(provider)
