@@ -1,10 +1,12 @@
-package org.ibartuszek.loadbalancer
+package org.ibartuszek.loadbalancer.it
 
+import org.ibartuszek.loadbalancer.LoadBalancerImpl
 import org.ibartuszek.loadbalancer.provider.ProviderImpl
+import org.ibartuszek.loadbalancer.providerlist.ProviderList
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-class LoadBalancerImplTest {
+class LoadBalancerIT {
 
     companion object {
         private const val ID_1 = "id1"
