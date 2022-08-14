@@ -1,11 +1,23 @@
 package org.ibartuszek.loadbalancer.it
 
+import org.ibartuszek.loadbalancer.LoadBalancer
 import org.ibartuszek.loadbalancer.LoadBalancerImpl
 import org.ibartuszek.loadbalancer.provider.ProviderImpl
 import org.ibartuszek.loadbalancer.providerlist.ProviderList
-import org.junit.jupiter.api.Assertions.*
+import org.ibartuszek.loadbalancer.providerlist.ProviderSelectionStrategy
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
+import org.mockito.junit.jupiter.MockitoExtension
 
+
+@ExtendWith(MockitoExtension::class)
 class LoadBalancerIT {
 
     companion object {
@@ -16,12 +28,24 @@ class LoadBalancerIT {
         private const val MAXIMUM_NUMBER_OF_PROVIDERS = 3
     }
 
+    @Mock
+    private lateinit var selectionStrategy: ProviderSelectionStrategy
+    private lateinit var providerList: ProviderList
+    private lateinit var loadBalancer: LoadBalancer
+
+    @BeforeEach
+    fun setup() {
+        providerList = ProviderList(
+            maximumNumberOfProviders = MAXIMUM_NUMBER_OF_PROVIDERS,
+            selectionStrategy = selectionStrategy
+        )
+        loadBalancer = LoadBalancerImpl(providerList)
+    }
+
     @Test
     fun testAcceptShouldPutTheProviderIntoProverList() {
         // given
         val provider = ProviderImpl(ID_1)
-        val providerList = ProviderList(MAXIMUM_NUMBER_OF_PROVIDERS)
-        val loadBalancer = LoadBalancerImpl(providerList)
         // when
         val actual = loadBalancer.accept(provider)
         // then
@@ -33,8 +57,7 @@ class LoadBalancerIT {
     fun testAcceptShouldRejectTheProviderWhenProverListIsFull() {
         // given
         val provider = ProviderImpl(ID_4)
-        val providerList = createFullyLoadedProviderList()
-        val loadBalancer = LoadBalancerImpl(providerList)
+        loadFullyProviderList()
         // when
         val actual = loadBalancer.accept(provider)
         // then
@@ -45,21 +68,20 @@ class LoadBalancerIT {
     @Test
     fun testGetShouldReturnAProviderId() {
         // given
-        val providerList = createFullyLoadedProviderList()
-        val loadBalancer = LoadBalancerImpl(providerList)
+        loadFullyProviderList()
+        `when`(selectionStrategy.selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS)).thenReturn(0)
         // when
         val actual = loadBalancer.get()
         // then
         assertEquals(ID_1, actual, "The loadBalancer should return the id of the first provider!")
         assertEquals(2, providerList.size(), "The size should be decreased after get method!")
+        verify(selectionStrategy).selectIndex(MAXIMUM_NUMBER_OF_PROVIDERS)
     }
 
-    private fun createFullyLoadedProviderList(): ProviderList {
-        val providerList = ProviderList(MAXIMUM_NUMBER_OF_PROVIDERS)
+    private fun loadFullyProviderList() {
         providerList.add(ProviderImpl(ID_1))
         providerList.add(ProviderImpl(ID_2))
         providerList.add(ProviderImpl(ID_3))
-        return providerList
     }
 
 }
