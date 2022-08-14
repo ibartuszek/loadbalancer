@@ -22,4 +22,6 @@ class ProviderList(private val maximumNumberOfProviders: Int) {
         return provider
     }
 
+    fun size() = queue.size
+
 }

@@ -37,6 +37,7 @@ class LoadBalancerImplTest {
         val actual = loadBalancer.accept(provider)
         // then
         assertFalse(actual, "The loadBalancer should accept provider!")
+        assertEquals(MAXIMUM_NUMBER_OF_PROVIDERS, providerList.size(), "The list should have maximum size!")
     }
 
     @Test
@@ -48,6 +49,7 @@ class LoadBalancerImplTest {
         val actual = loadBalancer.get()
         // then
         assertEquals(ID_1, actual, "The loadBalancer should return the id of the first provider!")
+        assertEquals(2, providerList.size(), "The size should be decreased after get method!")
     }
 
     private fun createFullyLoadedProviderList(): ProviderList {
