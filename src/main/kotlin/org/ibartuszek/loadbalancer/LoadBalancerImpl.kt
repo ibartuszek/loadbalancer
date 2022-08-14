@@ -19,6 +19,14 @@ class LoadBalancerImpl(
             }
         }
 
+    override fun exclude(provider: Provider): Boolean =
+        providerList.exclude(provider).also { excluded ->
+            if (excluded) {
+                logger.info { "The provider=$provider was excluded from the list!" }
+            } else {
+                logger.warn { "List of providers does not contain the provider=$provider!" }
+            }
+        }
 
     override fun get(): String = providerList.poll()?.get().also { id ->
         logger.info { "Return id=$id" }

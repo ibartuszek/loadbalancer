@@ -16,6 +16,8 @@ class ProviderList(
         return queue.add(provider)
     }
 
+    fun exclude(provider: Provider): Boolean = queue.remove(provider)
+
     fun poll(): Provider? {
         if (queue.size == 0) {
             return null
