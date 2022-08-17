@@ -1,7 +1,9 @@
 package org.ibartuszek.loadbalancer.providerlist
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 
 class RandomSelectionStrategyTest {
 
@@ -18,6 +20,11 @@ class RandomSelectionStrategyTest {
             actual <= maximum,
             "The selected value should be less or equal than the maximum=$maximum, actual=$actual!"
         )
+    }
+
+    @Test
+    fun testShouldRotateShouldReturnFalse() {
+        assertFalse(RandomSelectionStrategy().shouldRotate())
     }
 
 }
