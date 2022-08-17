@@ -46,4 +46,14 @@ class LoadBalancerImpl(
             id
         }
 
+    companion object {
+
+        @Suppress("unUsed")
+        fun create(
+            maximumRequestPerProviders: Int = 10,
+            providerList: ProviderList,
+            activeRequests: AtomicLong = AtomicLong()
+        ): LoadBalancer = LoadBalancerImpl(maximumRequestPerProviders, providerList, activeRequests)
+    }
+
 }

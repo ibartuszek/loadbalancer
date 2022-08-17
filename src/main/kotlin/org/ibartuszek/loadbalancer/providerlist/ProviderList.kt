@@ -36,4 +36,25 @@ class ProviderList(
 
     fun aliveProviders() = queue.size
 
+    companion object {
+
+        @Suppress("unUsed")
+        fun createWithRandomStrategy(
+            maximumNumberOfProviders: Int = 10,
+            queue: BlockingQueue<Provider> = ArrayBlockingQueue(maximumNumberOfProviders)
+        ): ProviderList = create(maximumNumberOfProviders, RandomSelectionStrategy(), queue)
+
+        @Suppress("unUsed")
+        fun createWithRoundRobinStrategy(
+            maximumNumberOfProviders: Int = 10,
+            queue: BlockingQueue<Provider> = ArrayBlockingQueue(maximumNumberOfProviders)
+        ): ProviderList = create(maximumNumberOfProviders, RoundRobinSelectionStrategy(), queue)
+
+        private fun create(
+            maximumNumberOfProviders: Int,
+            selectionStrategy: ProviderSelectionStrategy,
+            queue: BlockingQueue<Provider>,
+        ): ProviderList = ProviderList(maximumNumberOfProviders, selectionStrategy, queue)
+    }
+
 }

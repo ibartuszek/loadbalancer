@@ -5,6 +5,7 @@ import org.ibartuszek.loadbalancer.provider.Provider
 import org.ibartuszek.loadbalancer.providerlist.ProviderList
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ProviderHealthCheckManager(
@@ -12,7 +13,7 @@ class ProviderHealthCheckManager(
     private val numberOfSuccessfulChecksForReactivate: Int,
     private val timer: Timer,
     private val providerList: ProviderList,
-    private val inactiveProviderMap: ConcurrentHashMap<Provider, Int>,
+    private val inactiveProviderMap: ConcurrentMap<Provider, Int>,
     private val providersToReAccept: CopyOnWriteArrayList<Provider>
 ) : TimerTask() {
 
@@ -57,6 +58,26 @@ class ProviderHealthCheckManager(
         val newInactiveProviderMap = providerMap.filter { !it.value }.mapValues { 0 }
         providerList.remove(newInactiveProviderMap.keys)
         newInactiveProviderMap.forEach { (k, v) -> inactiveProviderMap.merge(k, v) { oldVal, _ -> oldVal } }
+    }
+
+    companion object {
+
+        @Suppress("unUsed")
+        fun create(
+            healthCheckInterval: Long = 10000L, // every 10 second
+            numberOfSuccessfulChecksForReactivate: Int = 2, // after two successful health check should reactivate the provider
+            timer: Timer = Timer(),
+            providerList: ProviderList,
+            inactiveProviderMap: ConcurrentMap<Provider, Int> = ConcurrentHashMap(),
+            providersToReAccept: CopyOnWriteArrayList<Provider> = CopyOnWriteArrayList()
+        ): ProviderHealthCheckManager = ProviderHealthCheckManager(
+            healthCheckInterval,
+            numberOfSuccessfulChecksForReactivate,
+            timer,
+            providerList,
+            inactiveProviderMap,
+            providersToReAccept
+        )
     }
 
 }
