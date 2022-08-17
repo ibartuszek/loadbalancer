@@ -1,0 +1,42 @@
+@startuml
+!theme crt-amber
+
+participant ProviderHealthCheckManager as Manager
+collections InactiveProviders
+collections ProvidersToReaccept
+participant ProviderList
+participant Provider
+
+' title Scheduled job on ProviderHealthCheckManager
+
+Manager -> InactiveProviders: checkInactiveProviders
+note left: Manager stores the inactive providers
+Manager -> Provider: check
+Provider -> Manager: alive or not
+Manager -> InactiveProviders: update provider counters
+
+alt Inactive Provider sends secondt health signal
+  Manager -> InactiveProviders: remove Provider
+  Manager -> ProvidersToReaccept: add Provider
+end
+
+Manager -> ProvidersToReaccept: get revived Provider
+Manager -> ProviderList: accept reviced Provider
+alt revived Provider accepted
+  ProviderList -> true
+  Manager -> ProvidersToReaccept: remove Provider
+else revived Provider rejected
+  ProviderList -> false
+  note left: the provider list is full
+end
+
+Manager -> ProviderList: check providers
+ProviderList -> Manager: Providers with status
+note left: only the dead Providers are used here
+alt inactive provider
+  Manager -> ProviderList: exclude Provider
+  Manager -> InactiveProviders: add new inactive provider
+  note left: only new inactive provider can appear here
+end
+
+@enduml
