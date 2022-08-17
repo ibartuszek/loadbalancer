@@ -31,19 +31,19 @@ class LoadBalancerImpl(
             }
         }
 
-    override fun get(): String {
-        if (providerList.aliveProviders() * maximumRequestPerProviders >= activeRequests.get()) {
-            activeRequests.incrementAndGet()
-            try {
-                return providerList.poll()?.get().also { id ->
-                    logger.info { "Return id=$id" }
-                } ?: throw ProviderListEmptyException()
-            } finally {
-                activeRequests.decrementAndGet()
-            }
+    override fun get(): String =
+        if (providerList.aliveProviders() == 0) {
+            logger.warn { "Request cannot be forwarded, there are no registered Provider!" }
+            throw ProviderListEmptyException()
+        } else if (providerList.aliveProviders() * maximumRequestPerProviders <= activeRequests.get()) {
+            logger.warn { "Request cannot be forwarded, because the active requests number reached the request limit!" }
+            throw ProviderRequestCapacityLimitException()
         } else {
-            throw ProviderCapacityLimitException()
+            activeRequests.incrementAndGet()
+            val id = providerList.poll().get()
+            logger.info { "Return id=$id" }
+            activeRequests.decrementAndGet()
+            id
         }
-    }
 
 }

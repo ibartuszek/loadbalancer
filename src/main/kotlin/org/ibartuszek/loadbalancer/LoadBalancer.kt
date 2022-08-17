@@ -27,4 +27,4 @@ interface LoadBalancer {
 
 class ProviderListEmptyException: java.lang.RuntimeException()
 
-class ProviderCapacityLimitException: java.lang.RuntimeException()
+class ProviderRequestCapacityLimitException: java.lang.RuntimeException()
