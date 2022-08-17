@@ -23,7 +23,7 @@ class LoadBalancerImpl(
         }
 
     override fun exclude(provider: Provider): Boolean =
-        providerList.exclude(provider).also { excluded ->
+        providerList.remove(provider).also { excluded ->
             if (excluded) {
                 logger.info { "The provider=$provider was excluded from the list!" }
             } else {
@@ -40,7 +40,7 @@ class LoadBalancerImpl(
             throw ProviderRequestCapacityLimitException()
         } else {
             activeRequests.incrementAndGet()
-            val id = providerList.poll().get()
+            val id = providerList.get().get()
             logger.info { "Return id=$id" }
             activeRequests.decrementAndGet()
             id

@@ -55,7 +55,7 @@ class ProviderHealthCheckManager(
     private fun collectInactiveProviders() {
         val providerMap = providerList.check()
         val newInactiveProviderMap = providerMap.filter { !it.value }.mapValues { 0 }
-        providerList.exclude(newInactiveProviderMap.keys)
+        providerList.remove(newInactiveProviderMap.keys)
         newInactiveProviderMap.forEach { (k, v) -> inactiveProviderMap.merge(k, v) { oldVal, _ -> oldVal } }
     }
 

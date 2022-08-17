@@ -7,4 +7,9 @@ interface ProviderSelectionStrategy {
      */
     fun selectIndex(maximumIndex: Int): Int
 
+    /**
+     * The function should tell if the element should be put at the end of the list
+     */
+    fun shouldRotate(): Boolean
+
 }
