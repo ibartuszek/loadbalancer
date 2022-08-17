@@ -4,6 +4,7 @@ import org.ibartuszek.loadbalancer.provider.Provider
 import org.ibartuszek.loadbalancer.providerlist.ProviderSelectionStrategy
 import org.ibartuszek.loadbalancer.providerlist.RandomSelectionStrategy
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -67,6 +68,24 @@ class HealthCheckIT : AbstractLoadBalancerIT() {
         assertTrue(providerListQueue.contains(provider), "ProviderList should contain the provider!")
         assertEquals(0, inactiveProviderMap.size, "Inactive providers map should be empty!")
         assertEquals(0, providersToReAccept.size, "The actual providers to re-accept should be empty (Again)!")
+    }
+
+    @Test
+    fun testHealthCheckShouldWaitForReactivatingAfterSecondSuccessfulHealthCheckIfTheQueueIsFull() {
+        // given
+        loadFullyProviderList()
+        val provider = mock(Provider::class.java)
+        `when`(provider.check()).thenReturn(true).thenReturn(true)
+        inactiveProviderMap[provider] = 1
+
+        // when
+        providerHealthCheckManager.run()
+        // then
+        verify(provider, times(1)).check()
+        assertEquals(3, providerListQueue.size, "ProviderList should have the maximum number of providers!")
+        assertFalse(providerListQueue.contains(provider), "ProviderList should not contain the provider!")
+        assertEquals(0, inactiveProviderMap.size, "Inactive providers map should be empty!")
+        assertEquals(1, providersToReAccept.size, "The actual providers to re-accept should contain the reactivated provider!")
     }
 
 }
