@@ -1,0 +1,40 @@
+@startuml
+!theme crt-amber
+
+actor User
+participant LoadBalancer
+participant ProviderList
+participant Provider
+
+' title Get id from Provider
+
+User -> LoadBalancer : get
+note left: request to get id from a Provider
+LoadBalancer -> ProviderList: aliverProviders
+ProviderList -> LoadBalancer: aliverProviders
+
+alt aliverProviders == 0
+  LoadBalancer -> User: ProviderListEmptyException
+
+else activeRequests has been reached the maximum
+  LoadBalancer -> User: ProviderRequestCapacityLimitException
+  note left
+  not enough capacity to
+  handle the user request
+  end note
+
+else get a provider
+  LoadBalancer -> ProviderList: get
+  note left
+  providerList choose a provider
+  on the basis of the strategy
+  (Random or Round Robin)
+  end note
+  ProviderList -> LoadBalancer: Provider
+  LoadBalancer -> Provider: get
+  Provider -> LoadBalancer: id
+  LoadBalancer -> User: id
+
+end
+
+@enduml

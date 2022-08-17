@@ -1,0 +1,25 @@
+@startuml
+!theme crt-amber
+
+actor User
+participant LoadBalancer
+participant ProviderList
+
+' title Exclude Provider
+
+User -> LoadBalancer : exclude
+note left: request to exclude existing Provider
+LoadBalancer -> ProviderList: remove
+note left: remove from the queue
+
+alt Provider removed successfully
+  ProviderList -> LoadBalancer: true
+  LoadBalancer -> User: true
+
+else Provider not found
+  ProviderList -> LoadBalancer: false
+  LoadBalancer -> User: false
+
+end
+
+@enduml
