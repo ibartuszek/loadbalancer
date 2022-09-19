@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.microutils:kotlin-logging:2.1.23")
+    implementation("io.github.microutils:kotlin-logging:3.0.0")
     runtimeOnly("org.slf4j:slf4j-simple:2.0.1")
     testImplementation(kotlin("test"))
     testImplementation("org.mockito:mockito-core:4.8.0")
